@@ -1,17 +1,18 @@
 let lang = "ar";
 let cart = [];
 let orderNumber = Number(localStorage.getItem("orderNumber")) || 200;
+let selectedPaymentMethod = "";
 
 const texts = {
   ar: {
     welcomeTitle: "حياك الله في أشجار كافيه",
-    welcomeText: "فضلاً اختر اللغة المفضلة للانتقال إلى قائمة المنيو",
+    welcomeText: "فضلاً اختر طريقة البدء للانتقال إلى تجربة الطلب",
     summaryTitle: "ملخص الطلب",
     itemsLabel: "العناصر",
     totalLabel: "الإجمالي",
     emptyCart: "لا توجد عناصر في السلة",
     menu: "المنيو",
-    menuGuide: "يمكنك اختيار صنف أو أكثر، ثم الانتقال إلى الدفع وتأكيد الطلب.",
+    menuGuide: "نحن الآن في صفحة المنيو، يمكنك اختيار صنف أو أكثر ثم الانتقال إلى الدفع.",
     add: "إضافة",
     viewCart: "عرض الطلب",
     yourOrder: "طلبك",
@@ -29,17 +30,30 @@ const texts = {
     newOrder: "طلب جديد",
     cardLabel: "بطاقة",
     appleLabel: "أبل باي",
-    cashLabel: "عند الكاشير"
+    cashLabel: "عند الكاشير",
+    payDetails: "بيانات الدفع",
+    cardName: "اسم حامل البطاقة",
+    cardNumber: "رقم البطاقة",
+    expiry: "تاريخ الانتهاء",
+    cvv: "CVV",
+    completePayment: "إتمام الدفع",
+    payCounterMessage: "تم اختيار الدفع عند الكاشير",
+    paymentSuccess: "تمت محاكاة الدفع بنجاح",
+    featuresTitle: "ميزات النظام",
+    menuVoice: "نحن الآن في صفحة المنيو، يمكنك اختيار صنف أو أكثر من القائمة.",
+    paymentVoice: "نحن الآن في صفحة الدفع، فضلاً أكمل بيانات الدفع لإتمام الطلب.",
+    confirmVoice: "تم تأكيد طلبك بنجاح ويقوم الموظف حالياً بتجهيز الطلب.",
+    startVoice: "حياك الله في أشجار كافيه. يمكنك الآن البدء بالطلب."
   },
   en: {
     welcomeTitle: "Welcome to Ashjar Café",
-    welcomeText: "Please choose your preferred language to continue to the menu",
+    welcomeText: "Please choose how you want to begin your ordering experience",
     summaryTitle: "Order Summary",
     itemsLabel: "Items",
     totalLabel: "Total",
     emptyCart: "Cart is empty",
     menu: "Menu",
-    menuGuide: "Choose one or more items, then continue to payment and confirm your order.",
+    menuGuide: "You are now on the menu page. Choose one or more items, then continue to payment.",
     add: "Add",
     viewCart: "View Cart",
     yourOrder: "Your Order",
@@ -47,7 +61,7 @@ const texts = {
     confirm: "Continue to Payment",
     back: "Back",
     paymentTitle: "Select Payment Method",
-    paymentGuide: "Choose the suitable method to complete the order",
+    paymentGuide: "Choose the suitable method to complete your order",
     card: "Card",
     apple: "Apple Pay",
     cash: "Pay at Counter",
@@ -57,7 +71,20 @@ const texts = {
     newOrder: "New Order",
     cardLabel: "Card",
     appleLabel: "Apple Pay",
-    cashLabel: "Counter"
+    cashLabel: "Counter",
+    payDetails: "Payment Details",
+    cardName: "Cardholder Name",
+    cardNumber: "Card Number",
+    expiry: "Expiry Date",
+    cvv: "CVV",
+    completePayment: "Complete Payment",
+    payCounterMessage: "Pay at counter has been selected",
+    paymentSuccess: "Payment simulation completed successfully",
+    featuresTitle: "System Features",
+    menuVoice: "You are now on the menu page. You can choose one or more items from the list.",
+    paymentVoice: "You are now on the payment page. Please complete the payment details to finish the order.",
+    confirmVoice: "Your order has been confirmed successfully and the staff is now preparing it.",
+    startVoice: "Welcome to Ashjar Café. You can now start ordering."
   }
 };
 
@@ -88,12 +115,34 @@ function updateStaticTexts() {
   const summaryTitle = document.getElementById("summaryTitle");
   const itemsLabel = document.getElementById("itemsLabel");
   const totalLabel = document.getElementById("totalLabel");
+  const featuresTitle = document.getElementById("featuresTitle");
+  const featureList = document.getElementById("featureList");
 
   if (welcomeTitle) welcomeTitle.textContent = current.welcomeTitle;
   if (welcomeText) welcomeText.textContent = current.welcomeText;
   if (summaryTitle) summaryTitle.textContent = current.summaryTitle;
   if (itemsLabel) itemsLabel.textContent = current.itemsLabel;
   if (totalLabel) totalLabel.textContent = current.totalLabel;
+  if (featuresTitle) featuresTitle.textContent = current.featuresTitle;
+
+  if (featureList) {
+    featureList.innerHTML =
+      lang === "ar"
+        ? `
+          <li>ترحيب ذكي</li>
+          <li>منيو ثنائي اللغة</li>
+          <li>دفع تجريبي احترافي</li>
+          <li>إرسال الطلب للكاشير</li>
+          <li>نداء الطلب الجاهز</li>
+        `
+        : `
+          <li>Smart welcome</li>
+          <li>Bilingual menu</li>
+          <li>Professional payment simulation</li>
+          <li>Order sent to cashier</li>
+          <li>Ready order voice call</li>
+        `;
+  }
 }
 
 function updateCartSummary() {
@@ -133,12 +182,7 @@ function setLang(selected) {
   updateStaticTexts();
   document.getElementById("langBox").style.display = "none";
   renderMenu();
-
-  if (lang === "ar") {
-    speak("حياك الله في أشجار كافيه. يمكنك الآن اختيار طلبك من المنيو", "ar");
-  } else {
-    speak("Welcome to Ashjar Cafe. You can now choose your order from the menu", "en");
-  }
+  speak(t().startVoice, lang);
 }
 
 function renderMenu() {
@@ -175,6 +219,7 @@ function renderMenu() {
 
   app.innerHTML = html;
   updateCartSummary();
+  speak(current.menuVoice, lang);
 }
 
 function add(i) {
@@ -195,7 +240,7 @@ function renderCart() {
     cart.forEach((p) => {
       total += p.price;
       html += `
-        <div class="card">
+        <div class="card space-top">
           <div class="order-item">
             <span>${lang === "ar" ? p.ar : p.en}</span>
             <strong>${p.price} SR</strong>
@@ -205,7 +250,7 @@ function renderCart() {
     });
 
     html += `
-      <div class="card">
+      <div class="card space-top">
         <h3>${current.total}: ${total} SR</h3>
       </div>
       <div class="toolbar">
@@ -233,19 +278,19 @@ function goToPayment() {
       <div class="payment-card">
         <h3>${current.card}</h3>
         <p>${current.cardLabel}</p>
-        <button type="button" class="btn primary" onclick="pay('card')">${current.card}</button>
+        <button type="button" class="btn primary" onclick="openPaymentForm('card')">${current.card}</button>
       </div>
 
       <div class="payment-card">
         <h3>${current.apple}</h3>
         <p>${current.appleLabel}</p>
-        <button type="button" class="btn primary" onclick="pay('apple')">${current.apple}</button>
+        <button type="button" class="btn primary" onclick="openPaymentForm('apple')">${current.apple}</button>
       </div>
 
       <div class="payment-card">
         <h3>${current.cash}</h3>
         <p>${current.cashLabel}</p>
-        <button type="button" class="btn primary" onclick="pay('cash')">${current.cash}</button>
+        <button type="button" class="btn primary" onclick="payAtCounter()">${current.cash}</button>
       </div>
     </div>
 
@@ -255,17 +300,67 @@ function goToPayment() {
   `;
 
   app.innerHTML = html;
+  speak(current.paymentVoice, lang);
 }
 
-function getPaymentLabel(method) {
+function openPaymentForm(method) {
+  selectedPaymentMethod = method;
+  const app = document.getElementById("app");
   const current = t();
-  if (method === "card") return current.card;
-  if (method === "apple") return current.apple;
-  return current.cash;
+
+  app.innerHTML = `
+    <div class="menu-header">
+      <h2>${current.payDetails}</h2>
+      <p>${method === "apple" ? "Apple Pay Simulation" : current.paymentGuide}</p>
+    </div>
+
+    <div class="form-card">
+      <div class="form-group">
+        <label>${current.cardName}</label>
+        <input id="cardName" type="text" placeholder="${current.cardName}" />
+      </div>
+
+      <div class="form-group">
+        <label>${current.cardNumber}</label>
+        <input id="cardNumber" type="text" placeholder="0000 0000 0000 0000" />
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label>${current.expiry}</label>
+          <input id="expiry" type="text" placeholder="MM/YY" />
+        </div>
+
+        <div class="form-group">
+          <label>${current.cvv}</label>
+          <input id="cvv" type="text" placeholder="123" />
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button type="button" class="btn primary" onclick="submitPaymentForm()">${current.completePayment}</button>
+        <button type="button" class="btn secondary" onclick="goToPayment()">${current.back}</button>
+      </div>
+    </div>
+  `;
+
+  speak(current.paymentVoice, lang);
 }
 
-function pay(method) {
-  const current = t();
+function submitPaymentForm() {
+  const name = document.getElementById("cardName").value.trim();
+  const number = document.getElementById("cardNumber").value.trim();
+  const expiry = document.getElementById("expiry").value.trim();
+  const cvv = document.getElementById("cvv").value.trim();
+
+  if (!name || !number || !expiry || !cvv) {
+    if (lang === "ar") {
+      alert("فضلاً أكمل جميع بيانات الدفع");
+    } else {
+      alert("Please complete all payment fields");
+    }
+    return;
+  }
 
   if (lang === "ar") {
     speak("جاري معالجة الدفع", "ar");
@@ -276,14 +371,31 @@ function pay(method) {
   const app = document.getElementById("app");
   app.innerHTML = `
     <div class="card">
-      <h2>${current.processing}</h2>
-      <p>...</p>
+      <h2>${t().processing}</h2>
+      <p>${t().paymentSuccess}</p>
     </div>
   `;
 
   setTimeout(() => {
-    confirmOrder(method);
+    confirmOrder(selectedPaymentMethod || "card");
   }, 1200);
+}
+
+function payAtCounter() {
+  if (lang === "ar") {
+    speak("تم اختيار الدفع عند الكاشير", "ar");
+  } else {
+    speak("Pay at counter selected", "en");
+  }
+
+  confirmOrder("cash");
+}
+
+function getPaymentLabel(method) {
+  const current = t();
+  if (method === "card") return current.card;
+  if (method === "apple") return current.apple;
+  return current.cash;
 }
 
 function confirmOrder(method) {
@@ -301,11 +413,7 @@ function confirmOrder(method) {
   localStorage.setItem("currentOrder", JSON.stringify(order));
   localStorage.setItem("orderNumber", String(orderNumber + 1));
 
-  if (lang === "ar") {
-    speak("تم تأكيد طلبك بنجاح. الموظف يقوم الآن بتجهيز الطلب", "ar");
-  } else {
-    speak("Your order has been confirmed successfully. The staff is now preparing your order", "en");
-  }
+  speak(t().confirmVoice, lang);
 
   const app = document.getElementById("app");
   app.innerHTML = `
@@ -350,5 +458,7 @@ window.add = add;
 window.renderCart = renderCart;
 window.renderMenu = renderMenu;
 window.goToPayment = goToPayment;
-window.pay = pay;
+window.openPaymentForm = openPaymentForm;
+window.submitPaymentForm = submitPaymentForm;
+window.payAtCounter = payAtCounter;
 window.resetHome = resetHome;
