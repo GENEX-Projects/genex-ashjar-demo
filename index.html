@@ -3,147 +3,25 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>GENEX - Ashjar Kiosk</title>
-
-<style>
-body {
-    margin:0;
-    font-family: Arial;
-    background:#111;
-    color:white;
-}
-
-.container {
-    padding:20px;
-    max-width:900px;
-    margin:auto;
-}
-
-.btn {
-    padding:15px;
-    border:none;
-    border-radius:10px;
-    margin:5px;
-    font-size:16px;
-    cursor:pointer;
-}
-
-.primary {background:#7b5738;color:white;}
-.secondary {background:#333;color:white;}
-
-.card {
-    background:white;
-    color:black;
-    padding:15px;
-    border-radius:15px;
-    margin:10px 0;
-}
-
-</style>
-
+<title>GENEX - Ashjar</title>
+<link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<div class="container" id="app"></div>
+<div class="container">
 
-<script>
+<h1 class="title">أشجار كافيه</h1>
 
-let lang = "ar";
-let cart = [];
-let orderNumber = 101;
+<div id="langBox">
+<button onclick="setLang('ar')" class="btn">العربية</button>
+<button onclick="setLang('en')" class="btn">English</button>
+</div>
 
-const products = [
-    {ar:"أمريكانو",en:"Americano",price:15},
-    {ar:"لاتيه",en:"Latte",price:18},
-    {ar:"كابتشينو",en:"Cappuccino",price:17},
-    {ar:"فلات وايت",en:"Flat White",price:16}
-];
+<div id="app"></div>
 
-function speak(text){
-    const msg = new SpeechSynthesisUtterance(text);
-    speechSynthesis.speak(msg);
-}
+</div>
 
-function renderHome(){
-    app.innerHTML = `
-    <h1>أشجار كافيه</h1>
-    <p>اختر اللغة</p>
-
-    <button class="btn primary" onclick="setLang('ar')">العربية</button>
-    <button class="btn primary" onclick="setLang('en')">English</button>
-    `;
-}
-
-function setLang(l){
-    lang = l;
-    speak(lang==="ar" ? "مرحباً بك في أشجار كافيه" : "Welcome to Ashjar Cafe");
-    renderMenu();
-}
-
-function renderMenu(){
-    let html = `<h2>${lang==="ar"?"المنيو":"Menu"}</h2>`;
-
-    products.forEach((p,i)=>{
-        html += `
-        <div class="card">
-            <h3>${lang==="ar"?p.ar:p.en}</h3>
-            <p>${p.price} SR</p>
-            <button class="btn primary" onclick="add(${i})">
-            ${lang==="ar"?"إضافة":"Add"}
-            </button>
-        </div>`;
-    });
-
-    html += `
-    <button class="btn secondary" onclick="renderCart()">
-    ${lang==="ar"?"عرض الطلب":"View Cart"}
-    </button>
-    `;
-
-    app.innerHTML = html;
-}
-
-function add(i){
-    cart.push(products[i]);
-}
-
-function renderCart(){
-    let html = `<h2>${lang==="ar"?"طلبك":"Your Order"}</h2>`;
-
-    let total = 0;
-
-    cart.forEach(p=>{
-        total += p.price;
-        html += `<p>${lang==="ar"?p.ar:p.en} - ${p.price} SR</p>`;
-    });
-
-    html += `<h3>Total: ${total} SR</h3>`;
-
-    html += `
-    <button class="btn primary" onclick="confirmOrder()">
-    ${lang==="ar"?"تأكيد":"Confirm"}
-    </button>
-    `;
-
-    app.innerHTML = html;
-}
-
-function confirmOrder(){
-    speak(lang==="ar"?"تم تأكيد طلبك":"Order confirmed");
-
-    app.innerHTML = `
-    <h2>${lang==="ar"?"تم الطلب":"Order Confirmed"}</h2>
-    <h1>#${orderNumber}</h1>
-    `;
-
-    orderNumber++;
-    cart = [];
-}
-
-renderHome();
-
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
