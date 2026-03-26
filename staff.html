@@ -70,4 +70,30 @@
       renderStaff();
     }
 
-    function markReady
+    function markReady() {
+      const saved = localStorage.getItem("currentOrder");
+      if (!saved) return;
+
+      const order = JSON.parse(saved);
+      order.status = "ready";
+      localStorage.setItem("currentOrder", JSON.stringify(order));
+
+      if (staffLang === "ar") {
+        speak(`الطلب رقم ${order.number} جاهز للاستلام`, "ar");
+      } else {
+        speak(`Order number ${order.number} is ready for pickup`, "en");
+      }
+
+      renderStaff();
+    }
+
+    function clearOrder() {
+      localStorage.removeItem("currentOrder");
+      renderStaff();
+    }
+
+    renderStaff();
+    setInterval(renderStaff, 1500);
+  </script>
+</body>
+</html>
