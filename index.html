@@ -3,19 +3,70 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GENEX - Ashjar</title>
+  <title>GENEX - Ashjar Café</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1 class="title">أشجار كافيه</h1>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <div class="brand-mini">G E N E X</div>
+        <h1 class="title">أشجار كافيه</h1>
+        <p class="subtitle">نظام طلب ذكي ثنائي اللغة</p>
+      </div>
+      <a class="staff-link" href="staff.html">واجهة الكاشير</a>
+    </header>
 
-    <div id="langBox">
-      <button type="button" id="btnAr" class="btn">العربية</button>
-      <button type="button" id="btnEn" class="btn">English</button>
-    </div>
+    <main class="layout">
+      <section class="main-panel">
+        <div id="langBox" class="hero-card">
+          <div class="badge">Smart Welcome</div>
+          <h2 id="welcomeTitle">حياك الله في أشجار كافيه</h2>
+          <p id="welcomeText">
+            فضلاً اختر اللغة المفضلة للانتقال إلى قائمة المنيو
+          </p>
 
-    <div id="app"></div>
+          <div class="lang-actions">
+            <button type="button" id="btnAr" class="btn primary">العربية</button>
+            <button type="button" id="btnEn" class="btn secondary">English</button>
+          </div>
+        </div>
+
+        <div id="app"></div>
+      </section>
+
+      <aside class="side-panel">
+        <div class="summary-card">
+          <h3 id="summaryTitle">ملخص الطلب</h3>
+
+          <div class="stats">
+            <div class="stat-box">
+              <span id="itemsLabel">العناصر</span>
+              <strong id="itemCount">0</strong>
+            </div>
+            <div class="stat-box">
+              <span id="totalLabel">الإجمالي</span>
+              <strong id="totalAmount">0 SR</strong>
+            </div>
+          </div>
+
+          <div id="cartPreview" class="cart-preview">
+            لا توجد عناصر في السلة
+          </div>
+        </div>
+
+        <div class="summary-card">
+          <h3>ميزات النظام</h3>
+          <ul class="feature-list">
+            <li>ترحيب ذكي</li>
+            <li>تبديل عربي / إنجليزي</li>
+            <li>اختيار الدفع</li>
+            <li>إرسال الطلب للكاشير</li>
+            <li>نداء الطلب الجاهز</li>
+          </ul>
+        </div>
+      </aside>
+    </main>
   </div>
 
   <script src="script.js"></script>
