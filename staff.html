@@ -7,9 +7,13 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="bg-orb orb-1"></div>
-  <div class="bg-orb orb-2"></div>
-  <div class="bg-orb orb-3"></div>
+  <div class="bg-fog fog-1"></div>
+  <div class="bg-fog fog-2"></div>
+  <div class="bg-light light-1"></div>
+  <div class="bg-light light-2"></div>
+
+  <div id="beans-rain"></div>
+  <div id="beans-ground"></div>
 
   <div class="page-shell">
     <header class="topbar">
@@ -18,7 +22,6 @@
         <h1 class="title">واجهة الكاشير</h1>
         <p class="subtitle">Ashjar Staff Dashboard</p>
       </div>
-      <a class="staff-link" href="index.html">واجهة العميل</a>
     </header>
 
     <main class="layout single">
@@ -52,7 +55,8 @@
         readyStatus: "جاهز للاستلام",
         quality: "يرجى الحفاظ على الجودة واتباع تعليمات كل طلب كما يجب.",
         payment: "طريقة الدفع",
-        liveCall: "نداء النظام"
+        liveCall: "نداء النظام",
+        queue: "حالة النداء"
       },
       en: {
         noOrders: "No Orders",
@@ -68,7 +72,8 @@
         readyStatus: "Ready for Pickup",
         quality: "Please maintain quality and follow the instructions for each order properly.",
         payment: "Payment Method",
-        liveCall: "System Call"
+        liveCall: "System Call",
+        queue: "Queue Call"
       }
     };
 
@@ -132,7 +137,14 @@
 
           <div class="pay-method-view">${t.payment}: <strong>${order.paymentMethod || "-"}</strong></div>
 
-          <div class="pay-method-view">${t.liveCall}: <strong>${order.status === "ready" ? (staffLang === "ar" ? "الطلب جاهز للاستلام" : "Order is ready for pickup") : (staffLang === "ar" ? "بانتظار التجهيز" : "Waiting for preparation")}</strong></div>
+          <div class="pay-method-view">
+            ${t.queue}: 
+            <strong>
+              ${order.status === "ready"
+                ? (staffLang === "ar" ? "الطلب جاهز للاستلام" : "Order is ready for pickup")
+                : (staffLang === "ar" ? "بانتظار التجهيز" : "Waiting for preparation")}
+            </strong>
+          </div>
 
           <div class="toolbar">
             <button type="button" class="btn primary" onclick="acceptOrder()">${t.accept}</button>
@@ -185,14 +197,12 @@
     document.getElementById("staffAr").addEventListener("click", function () {
       staffLang = "ar";
       localStorage.setItem("staffLang", "ar");
-      speak("تم التحويل إلى اللغة العربية في واجهة الكاشير", "ar");
       renderStaff();
     });
 
     document.getElementById("staffEn").addEventListener("click", function () {
       staffLang = "en";
       localStorage.setItem("staffLang", "en");
-      speak("Cashier interface switched to English", "en");
       renderStaff();
     });
 
