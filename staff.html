@@ -1,32 +1,73 @@
 <!DOCTYPE html>
-<html>
+<html lang="ar">
 <head>
-<title>Staff</title>
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GENEX Staff Panel</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <div class="container">
+    <h1>Staff Panel</h1>
+    <div id="staffApp"></div>
+  </div>
 
-<div class="container">
+  <script>
+    let staffLang = "ar";
 
-<h1>Staff Panel</h1>
+    function speak(text, selectedLang = "ar") {
+      const msg = new SpeechSynthesisUtterance(text);
+      msg.lang = selectedLang === "ar" ? "ar-SA" : "en-US";
+      speechSynthesis.cancel();
+      speechSynthesis.speak(msg);
+    }
 
-<h2 id="order">No Orders</h2>
+    function renderStaff() {
+      const saved = localStorage.getItem("currentOrder");
+      const app = document.getElementById("staffApp");
 
-<button class="btn" onclick="accept()">Accept</button>
-<button class="btn" onclick="ready()">Ready</button>
+      if (!saved) {
+        app.innerHTML = `<h2>No Orders</h2>`;
+        return;
+      }
 
-</div>
+      const order = JSON.parse(saved);
+      staffLang = order.lang || "ar";
 
-<script>
-function accept(){
-alert("تم استلام الطلب");
-}
+      let itemsHtml = "";
+      order.items.forEach(item => {
+        itemsHtml += `<p>${staffLang === "ar" ? item.ar : item.en} - ${item.price} SR</p>`;
+      });
 
-function ready(){
-alert("الطلب جاهز");
-}
-</script>
+      app.innerHTML = `
+        <div class="card">
+          <h2>${staffLang === "ar" ? "رقم الطلب" : "Order Number"}: #${order.number}</h2>
+          <p>${staffLang === "ar" ? "الحالة" : "Status"}: ${order.status}</p>
+          ${itemsHtml}
+          <h3>${staffLang === "ar" ? "الإجمالي" : "Total"}: ${order.total} SR</h3>
 
-</body>
-</html>
+          <button class="btn" onclick="acceptOrder()">${staffLang === "ar" ? "استلام الطلب" : "Accept Order"}</button>
+          <button class="btn" onclick="markReady()">${staffLang === "ar" ? "تم التجهيز" : "Mark Ready"}</button>
+          <button class="btn" onclick="clearOrder()">${staffLang === "ar" ? "مسح الطلب" : "Clear Order"}</button>
+        </div>
+      `;
+    }
+
+    function acceptOrder() {
+      const saved = localStorage.getItem("currentOrder");
+      if (!saved) return;
+
+      const order = JSON.parse(saved);
+      order.status = "preparing";
+      localStorage.setItem("currentOrder", JSON.stringify(order));
+
+      if (staffLang === "ar") {
+        speak("تم استلام الطلب وبدأ التجهيز", "ar");
+      } else {
+        speak("Order accepted and preparation started", "en");
+      }
+
+      renderStaff();
+    }
+
+    function markReady
