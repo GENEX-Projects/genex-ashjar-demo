@@ -3,17 +3,66 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>GENEX Staff Panel</title>
+  <title>GENEX - Staff Panel</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1>Staff Panel</h1>
-    <div id="staffApp"></div>
+  <div class="page-shell">
+    <header class="topbar">
+      <div>
+        <div class="brand-mini">G E N E X</div>
+        <h1 class="title">واجهة الكاشير</h1>
+        <p class="subtitle">Ashjar Staff Dashboard</p>
+      </div>
+      <a class="staff-link" href="index.html">واجهة العميل</a>
+    </header>
+
+    <main class="layout single">
+      <section class="main-panel">
+        <div class="hero-card">
+          <div class="toolbar">
+            <button type="button" id="staffAr" class="btn primary">العربية</button>
+            <button type="button" id="staffEn" class="btn secondary">English</button>
+          </div>
+          <div id="staffApp"></div>
+        </div>
+      </section>
+    </main>
   </div>
 
   <script>
-    let staffLang = "ar";
+    let staffLang = localStorage.getItem("staffLang") || "ar";
+
+    const staffText = {
+      ar: {
+        noOrders: "لا يوجد طلبات حالياً",
+        waiting: "بانتظار وصول طلب جديد من واجهة العميل",
+        orderNo: "رقم الطلب",
+        status: "الحالة",
+        total: "الإجمالي",
+        accept: "استلام الطلب",
+        ready: "تم التجهيز",
+        clear: "مسح الطلب",
+        new: "طلب جديد",
+        preparing: "قيد التجهيز",
+        readyStatus: "جاهز للاستلام",
+        quality: "يرجى الحفاظ على الجودة واتباع تعليمات كل طلب كما يجب."
+      },
+      en: {
+        noOrders: "No Orders",
+        waiting: "Waiting for a new order from the customer kiosk",
+        orderNo: "Order Number",
+        status: "Status",
+        total: "Total",
+        accept: "Accept Order",
+        ready: "Mark Ready",
+        clear: "Clear Order",
+        new: "New Order",
+        preparing: "Preparing",
+        readyStatus: "Ready for Pickup",
+        quality: "Please maintain quality and follow the instructions for each order properly."
+      }
+    };
 
     function speak(text, selectedLang = "ar") {
       const msg = new SpeechSynthesisUtterance(text);
@@ -22,33 +71,66 @@
       speechSynthesis.speak(msg);
     }
 
+    function getStatusLabel(status) {
+      const t = staffText[staffLang];
+      if (status === "new") return t.new;
+      if (status === "preparing") return t.preparing;
+      if (status === "ready") return t.readyStatus;
+      return status;
+    }
+
     function renderStaff() {
-      const saved = localStorage.getItem("currentOrder");
       const app = document.getElementById("staffApp");
+      const t = staffText[staffLang];
+      const saved = localStorage.getItem("currentOrder");
 
       if (!saved) {
-        app.innerHTML = `<h2>No Orders</h2>`;
+        app.innerHTML = `
+          <div class="order-box">
+            <h2>${t.noOrders}</h2>
+            <p>${t.waiting}</p>
+          </div>
+        `;
         return;
       }
 
       const order = JSON.parse(saved);
-      staffLang = order.lang || "ar";
-
       let itemsHtml = "";
-      order.items.forEach(item => {
-        itemsHtml += `<p>${staffLang === "ar" ? item.ar : item.en} - ${item.price} SR</p>`;
+
+      order.items.forEach((item) => {
+        itemsHtml += `
+          <div class="order-item">
+            <span>${staffLang === "ar" ? item.ar : item.en}</span>
+            <strong>${item.price} SR</strong>
+          </div>
+        `;
       });
 
       app.innerHTML = `
-        <div class="card">
-          <h2>${staffLang === "ar" ? "رقم الطلب" : "Order Number"}: #${order.number}</h2>
-          <p>${staffLang === "ar" ? "الحالة" : "Status"}: ${order.status}</p>
-          ${itemsHtml}
-          <h3>${staffLang === "ar" ? "الإجمالي" : "Total"}: ${order.total} SR</h3>
+        <div class="order-box">
+          <div class="order-head">
+            <div>
+              <p>${t.orderNo}</p>
+              <h2>#${order.number}</h2>
+            </div>
+            <div class="status-pill">${getStatusLabel(order.status)}</div>
+          </div>
 
-          <button class="btn" onclick="acceptOrder()">${staffLang === "ar" ? "استلام الطلب" : "Accept Order"}</button>
-          <button class="btn" onclick="markReady()">${staffLang === "ar" ? "تم التجهيز" : "Mark Ready"}</button>
-          <button class="btn" onclick="clearOrder()">${staffLang === "ar" ? "مسح الطلب" : "Clear Order"}</button>
+          <div class="notice">${t.quality}</div>
+
+          <div class="items-list">${itemsHtml}</div>
+
+          <h3>${t.total}: ${order.total} SR</h3>
+
+          <div class="pay-method-view">
+            Payment: <strong>${order.paymentMethod || "-"}</strong>
+          </div>
+
+          <div class="toolbar">
+            <button type="button" class="btn primary" onclick="acceptOrder()">${t.accept}</button>
+            <button type="button" class="btn secondary" onclick="markReady()">${t.ready}</button>
+            <button type="button" class="btn danger" onclick="clearOrder()">${t.clear}</button>
+          </div>
         </div>
       `;
     }
@@ -92,8 +174,24 @@
       renderStaff();
     }
 
+    document.getElementById("staffAr").addEventListener("click", function () {
+      staffLang = "ar";
+      localStorage.setItem("staffLang", "ar");
+      renderStaff();
+    });
+
+    document.getElementById("staffEn").addEventListener("click", function () {
+      staffLang = "en";
+      localStorage.setItem("staffLang", "en");
+      renderStaff();
+    });
+
     renderStaff();
-    setInterval(renderStaff, 1500);
+    setInterval(renderStaff, 1200);
+
+    window.acceptOrder = acceptOrder;
+    window.markReady = markReady;
+    window.clearOrder = clearOrder;
   </script>
 </body>
 </html>
