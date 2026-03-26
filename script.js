@@ -14,14 +14,18 @@ const products = [
 function speak(text, selectedLang = "ar") {
   const msg = new SpeechSynthesisUtterance(text);
   msg.lang = selectedLang === "ar" ? "ar-SA" : "en-US";
-  speechSynthesis.cancel();
-  speechSynthesis.speak(msg);
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(msg);
 }
 
 function setLang(l) {
   lang = l;
-  document.getElementById("langBox").style.display = "none";
-  renderMenu();
+
+  const langBox = document.getElementById("langBox");
+  const app = document.getElementById("app");
+
+  if (langBox) langBox.style.display = "none";
+  if (app) renderMenu();
 
   if (lang === "ar") {
     speak("حياك الله في أشجار كافيه. يمكنك الآن اختيار طلبك من المنيو", "ar");
@@ -31,6 +35,9 @@ function setLang(l) {
 }
 
 function renderMenu() {
+  const app = document.getElementById("app");
+  if (!app) return;
+
   let html = `<h2>${lang === "ar" ? "المنيو" : "Menu"}</h2>`;
 
   products.forEach((p, i) => {
@@ -38,16 +45,20 @@ function renderMenu() {
       <div class="card">
         <h3>${lang === "ar" ? p.ar : p.en}</h3>
         <p>${p.price} SR</p>
-        <button class="btn" onclick="add(${i})">${lang === "ar" ? "إضافة" : "Add"}</button>
+        <button type="button" class="btn" onclick="add(${i})">
+          ${lang === "ar" ? "إضافة" : "Add"}
+        </button>
       </div>
     `;
   });
 
   html += `
-    <button class="btn" onclick="renderCart()">${lang === "ar" ? "عرض الطلب" : "View Cart"}</button>
+    <button type="button" class="btn" onclick="renderCart()">
+      ${lang === "ar" ? "عرض الطلب" : "View Cart"}
+    </button>
   `;
 
-  document.getElementById("app").innerHTML = html;
+  app.innerHTML = html;
 }
 
 function add(i) {
@@ -55,6 +66,9 @@ function add(i) {
 }
 
 function renderCart() {
+  const app = document.getElementById("app");
+  if (!app) return;
+
   let total = 0;
   let html = `<h2>${lang === "ar" ? "طلبك" : "Your Order"}</h2>`;
 
@@ -67,12 +81,21 @@ function renderCart() {
     });
 
     html += `<h3>${lang === "ar" ? "الإجمالي" : "Total"}: ${total} SR</h3>`;
-    html += `<button class="btn" onclick="confirmOrder()">${lang === "ar" ? "تأكيد الطلب" : "Confirm Order"}</button>`;
+    html += `
+      <button type="button" class="btn" onclick="confirmOrder()">
+        ${lang === "ar" ? "تأكيد الطلب" : "Confirm Order"}
+      </button>
+    `;
   }
 
-  html += `<br><br><button class="btn" onclick="renderMenu()">${lang === "ar" ? "رجوع" : "Back"}</button>`;
+  html += `
+    <br><br>
+    <button type="button" class="btn" onclick="renderMenu()">
+      ${lang === "ar" ? "رجوع" : "Back"}
+    </button>
+  `;
 
-  document.getElementById("app").innerHTML = html;
+  app.innerHTML = html;
 }
 
 function confirmOrder() {
@@ -93,11 +116,16 @@ function confirmOrder() {
     speak("Your order has been confirmed successfully. The staff is now preparing your order", "en");
   }
 
-  document.getElementById("app").innerHTML = `
+  const app = document.getElementById("app");
+  if (!app) return;
+
+  app.innerHTML = `
     <h2>${lang === "ar" ? "تم تأكيد الطلب" : "Order Confirmed"}</h2>
     <h1 class="big">#${orderNumber}</h1>
     <p>${lang === "ar" ? "تم إرسال الطلب إلى الكاشير" : "The order has been sent to the cashier"}</p>
-    <button class="btn" onclick="resetHome()">${lang === "ar" ? "طلب جديد" : "New Order"}</button>
+    <button type="button" class="btn" onclick="resetHome()">
+      ${lang === "ar" ? "طلب جديد" : "New Order"}
+    </button>
   `;
 
   orderNumber++;
@@ -105,5 +133,33 @@ function confirmOrder() {
 }
 
 function resetHome() {
-  document.getElementById("langBox").style.display = "block";
-  document.getElementById("app").innerHTML = "";
+  const langBox = document.getElementById("langBox");
+  const app = document.getElementById("app");
+
+  if (langBox) langBox.style.display = "block";
+  if (app) app.innerHTML = "";
+}
+
+window.addEventListener("DOMContentLoaded", function () {
+  const btnAr = document.getElementById("btnAr");
+  const btnEn = document.getElementById("btnEn");
+
+  if (btnAr) {
+    btnAr.addEventListener("click", function () {
+      setLang("ar");
+    });
+  }
+
+  if (btnEn) {
+    btnEn.addEventListener("click", function () {
+      setLang("en");
+    });
+  }
+});
+
+window.setLang = setLang;
+window.add = add;
+window.renderCart = renderCart;
+window.confirmOrder = confirmOrder;
+window.renderMenu = renderMenu;
+window.resetHome = resetHome;
