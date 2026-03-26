@@ -37,9 +37,7 @@ const texts = {
     expiry: "تاريخ الانتهاء",
     cvv: "CVV",
     completePayment: "إتمام الدفع",
-    payCounterMessage: "تم اختيار الدفع عند الكاشير",
     paymentSuccess: "تمت محاكاة الدفع بنجاح",
-    featuresTitle: "ميزات النظام",
     menuVoice: "نحن الآن في صفحة المنيو، يمكنك اختيار صنف أو أكثر من القائمة.",
     paymentVoice: "نحن الآن في صفحة الدفع، فضلاً أكمل بيانات الدفع لإتمام الطلب.",
     confirmVoice: "تم تأكيد طلبك بنجاح ويقوم الموظف حالياً بتجهيز الطلب.",
@@ -78,9 +76,7 @@ const texts = {
     expiry: "Expiry Date",
     cvv: "CVV",
     completePayment: "Complete Payment",
-    payCounterMessage: "Pay at counter has been selected",
     paymentSuccess: "Payment simulation completed successfully",
-    featuresTitle: "System Features",
     menuVoice: "You are now on the menu page. You can choose one or more items from the list.",
     paymentVoice: "You are now on the payment page. Please complete the payment details to finish the order.",
     confirmVoice: "Your order has been confirmed successfully and the staff is now preparing it.",
@@ -88,13 +84,66 @@ const texts = {
   }
 };
 
+/*
+بعد ما ترسل الصور الحقيقية:
+أنشئ مجلد اسمه images
+وارفع الصور بهذه الأسماء أو أي أسماء تبغاها ثم عدل المسارات هنا.
+*/
 const products = [
-  { ar: "لاتيه", en: "Latte", price: 18, icon: "☕", descAr: "مشروب ناعم ومتوازن", descEn: "Smooth and balanced coffee" },
-  { ar: "أمريكانو", en: "Americano", price: 15, icon: "☕", descAr: "إسبريسو مع ماء ساخن", descEn: "Espresso with hot water" },
-  { ar: "كابتشينو", en: "Cappuccino", price: 17, icon: "🥛", descAr: "رغوة كثيفة وطعم كلاسيكي", descEn: "Classic taste with rich foam" },
-  { ar: "فلات وايت", en: "Flat White", price: 16, icon: "🥤", descAr: "مزيج ناعم من الحليب والقهوة", descEn: "Silky milk and espresso blend" },
-  { ar: "شوكولاتة ساخنة", en: "Hot Chocolate", price: 18, icon: "🍫", descAr: "غنية وكريمية", descEn: "Rich and creamy" },
-  { ar: "إسبريسو", en: "Espresso", price: 12, icon: "⚫", descAr: "شوت مركز", descEn: "Concentrated shot" }
+  {
+    ar: "لاتيه",
+    en: "Latte",
+    price: 18,
+    icon: "☕",
+    descAr: "مشروب ناعم ومتوازن",
+    descEn: "Smooth and balanced coffee",
+    image: "images/latte.jpg"
+  },
+  {
+    ar: "أمريكانو",
+    en: "Americano",
+    price: 15,
+    icon: "☕",
+    descAr: "إسبريسو مع ماء ساخن",
+    descEn: "Espresso with hot water",
+    image: "images/americano.jpg"
+  },
+  {
+    ar: "كابتشينو",
+    en: "Cappuccino",
+    price: 17,
+    icon: "🥛",
+    descAr: "رغوة كثيفة وطعم كلاسيكي",
+    descEn: "Classic taste with rich foam",
+    image: "images/cappuccino.jpg"
+  },
+  {
+    ar: "فلات وايت",
+    en: "Flat White",
+    price: 16,
+    icon: "🥤",
+    descAr: "مزيج ناعم من الحليب والقهوة",
+    descEn: "Silky milk and espresso blend",
+    image: "images/flatwhite.jpg"
+  },
+  {
+    ar: "شوكولاتة ساخنة",
+    en: "Hot Chocolate",
+    price: 18,
+    icon: "🍫",
+    descAr: "غنية وكريمية",
+    descEn: "Rich and creamy",
+    image: "images/hotchocolate.jpg"
+  },
+  {
+    ar: "إسبريسو",
+    en: "Espresso",
+    price: 12,
+    icon: "⚫",
+    descAr: "شوت مركز",
+    descEn: "Concentrated shot",
+    image: "images/espresso.jpg"
+  }
 ];
 
 function t() {
@@ -115,34 +164,12 @@ function updateStaticTexts() {
   const summaryTitle = document.getElementById("summaryTitle");
   const itemsLabel = document.getElementById("itemsLabel");
   const totalLabel = document.getElementById("totalLabel");
-  const featuresTitle = document.getElementById("featuresTitle");
-  const featureList = document.getElementById("featureList");
 
   if (welcomeTitle) welcomeTitle.textContent = current.welcomeTitle;
   if (welcomeText) welcomeText.textContent = current.welcomeText;
   if (summaryTitle) summaryTitle.textContent = current.summaryTitle;
   if (itemsLabel) itemsLabel.textContent = current.itemsLabel;
   if (totalLabel) totalLabel.textContent = current.totalLabel;
-  if (featuresTitle) featuresTitle.textContent = current.featuresTitle;
-
-  if (featureList) {
-    featureList.innerHTML =
-      lang === "ar"
-        ? `
-          <li>ترحيب ذكي</li>
-          <li>منيو ثنائي اللغة</li>
-          <li>دفع تجريبي احترافي</li>
-          <li>إرسال الطلب للكاشير</li>
-          <li>نداء الطلب الجاهز</li>
-        `
-        : `
-          <li>Smart welcome</li>
-          <li>Bilingual menu</li>
-          <li>Professional payment simulation</li>
-          <li>Order sent to cashier</li>
-          <li>Ready order voice call</li>
-        `;
-  }
 }
 
 function updateCartSummary() {
@@ -200,7 +227,12 @@ function renderMenu() {
   products.forEach((p, i) => {
     html += `
       <div class="card">
-        <div class="product-image">${p.icon}</div>
+        <div class="product-image real-image" style="background-image:
+          linear-gradient(135deg, rgba(45,35,25,0.25), rgba(141,105,68,0.28)),
+          url('${p.image}');
+        ">
+          <span style="display:${p.image ? 'none' : 'block'}">${p.icon}</span>
+        </div>
         <h3 class="product-name">${lang === "ar" ? p.ar : p.en}</h3>
         <div class="product-desc">${lang === "ar" ? p.descAr : p.descEn}</div>
         <div class="product-row">
@@ -440,7 +472,26 @@ function resetHome() {
   updateCartSummary();
 }
 
+function createBeans() {
+  const container = document.getElementById("beans-rain");
+  if (!container) return;
+
+  container.innerHTML = "";
+  const count = 48;
+
+  for (let i = 0; i < count; i++) {
+    const bean = document.createElement("div");
+    bean.className = "bean";
+    bean.style.left = `${Math.random() * 100}%`;
+    bean.style.animationDuration = `${6 + Math.random() * 7}s`;
+    bean.style.animationDelay = `${Math.random() * 8}s`;
+    bean.style.transform = `scale(${0.7 + Math.random() * 0.8})`;
+    container.appendChild(bean);
+  }
+}
+
 window.addEventListener("DOMContentLoaded", function () {
+  createBeans();
   updateStaticTexts();
   updateCartSummary();
 
