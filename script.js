@@ -82,10 +82,10 @@ function renderCart() {
 
     html += `<h3>${lang === "ar" ? "الإجمالي" : "Total"}: ${total} SR</h3>`;
     html += `
-      <button type="button" class="btn" onclick="confirmOrder()">
-        ${lang === "ar" ? "تأكيد الطلب" : "Confirm Order"}
-      </button>
-    `;
+<button class="btn" onclick="goToPayment()">
+${lang==="ar"?"الدفع":"Checkout"}
+</button>
+`;
   }
 
   html += `
@@ -98,6 +98,26 @@ function renderCart() {
   app.innerHTML = html;
 }
 
+function goToPayment(){
+  let html = `
+  <h2>${lang==="ar"?"اختر طريقة الدفع":"Select Payment Method"}</h2>
+
+  <button class="btn" onclick="pay('card')">
+  ${lang==="ar"?"بطاقة بنكية":"Card"}
+  </button>
+
+  <button class="btn" onclick="pay('apple')">
+  Apple Pay
+  </button>
+
+  <button class="btn" onclick="pay('cash')">
+  ${lang==="ar"?"الدفع عند الاستلام":"Pay at Counter"}
+  </button>
+  `;
+
+  document.getElementById("app").innerHTML = html;
+}
+
 function confirmOrder() {
   const order = {
     number: orderNumber,
@@ -106,6 +126,18 @@ function confirmOrder() {
     status: "new",
     lang: lang
   };
+  
+  function pay(method){
+  if(lang==="ar"){
+    speak("جاري معالجة الدفع");
+  }else{
+    speak("Processing payment");
+  }
+
+  setTimeout(()=>{
+    confirmOrder();
+  },1500);
+  }
 
   localStorage.setItem("currentOrder", JSON.stringify(order));
   localStorage.setItem("orderNumber", String(orderNumber + 1));
